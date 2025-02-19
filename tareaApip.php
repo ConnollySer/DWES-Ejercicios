@@ -5,7 +5,7 @@
  *
  * @category   API
  * @package    PokeAPI
- * @author     Tu Nombre
+ * @author     sergio connolly
  * @license    MIT
  * @version    1.0
  * @link       https://pokeapi.co/
