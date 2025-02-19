@@ -1,3 +1,63 @@
+<?php
+/**
+ * Este script permite buscar información de un Pokémon utilizando la PokeAPI.
+ * El usuario ingresa el nombre o ID del Pokémon, y el script muestra su imagen y habilidades.
+ *
+ * @category   API
+ * @package    PokeAPI
+ * @author     Tu Nombre
+ * @license    MIT
+ * @version    1.0
+ * @link       https://pokeapi.co/
+ */
+
+/**
+ * Obtiene y muestra la información de un Pokémon específico.
+ *
+ * Esta función toma el nombre o ID de un Pokémon, realiza una solicitud a la PokeAPI,
+ * y muestra la imagen y habilidades del Pokémon en una página web.
+ *
+ * @param string $pokemonNameOrId El nombre o ID del Pokémon a buscar.
+ * @return void
+ */
+function getPokemonInfo($pokemonNameOrId)
+{
+    // Construye la URL de la API con el nombre o ID del Pokémon
+    $url = "https://pokeapi.co/api/v2/pokemon/$pokemonNameOrId";
+
+    // Realiza la solicitud a la API
+    $json_data = @file_get_contents($url);
+
+    // Verifica si la solicitud fue exitosa
+    if ($json_data === FALSE) {
+        echo "<p class='error'>No se encontró el Pokémon. Intenta con otro nombre o ID.</p>";
+    } else {
+        // Decodifica la respuesta JSON
+        $data = json_decode($json_data, true);
+
+        // Extrae la información del Pokémon
+        $name = ucfirst($data['name']);
+        $image = $data['sprites']['front_default'];
+        $abilities = array_map(function ($ability) {
+            return ucfirst($ability['ability']['name']);
+        }, $data['abilities']);
+
+        // Muestra la información del Pokémon
+        echo "<div class='pokemon-info'>";
+        echo "<h2>$name</h2>";
+        echo "<img src='$image' alt='$name' class='pokemon-image'>";
+        echo "<p><strong>Habilidades:</strong> " . implode(", ", $abilities) . "</p>";
+        echo "</div>";
+    }
+}
+
+// Verifica si se ha enviado un nombre o ID de Pokémon a través del formulario
+if (isset($_GET['pokemon'])) {
+    $pokemonNameOrId = strtolower($_GET['pokemon']);
+    getPokemonInfo($pokemonNameOrId);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -67,32 +127,6 @@
     <input type="text" id="pokemon" name="pokemon" placeholder="Ej: pikachu o 25" required>
     <button type="submit">Buscar</button>
 </form>
-
-<?php
-if (isset($_GET['pokemon'])) {
-    $pokemonNameOrId = strtolower($_GET['pokemon']);
-    $url = "https://pokeapi.co/api/v2/pokemon/$pokemonNameOrId";
-
-   
-    $json_data = @file_get_contents($url);
-
-    if ($json_data === FALSE) {
-        echo "<p class='error'>No se encontró el Pokémon. Intenta con otro nombre o ID.</p>";
-    } else {
-       
-        $data = json_decode($json_data, true);
-
-        $name = ucfirst($data['name']);
-        $image = $data['sprites']['front_default'];
-       
-        echo "<div class='pokemon-info'>";
-        echo "<h2>$name</h2>";
-        echo "<img src='$image' alt='$name' class='pokemon-image'>";
-        
-        echo "</div>";
-    }
-}
-?>
 
 </body>
 </html>
